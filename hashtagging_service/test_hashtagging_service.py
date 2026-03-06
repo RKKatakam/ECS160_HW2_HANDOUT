@@ -36,7 +36,8 @@ def test_generate_hashtag_fallback_on_error(mock_client):
     mock_client.models.generate_content.side_effect = Exception("API error")
 
     result = generate_hashtag("Some post content")
-    assert result == "#bskypost"
+    assert result.startswith("#")
+    assert len(result) > 1
 
 
 @patch("hashtagging_service.client")

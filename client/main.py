@@ -24,22 +24,26 @@ def send_to_pipeline(post_content):
     Send a post to the moderation service.
     Returns the hashtag string on success, or 'FAILED' if moderation fails.
     """
-    response = requests.post(
-        "http://localhost:8001/moderate",
-        json={"post_content": post_content},
-    )
-    data = response.json()
-    return data["result"]
+    try:
+        response = requests.post(
+            "http://localhost:8001/moderate",
+            json={"post_content": post_content},
+            timeout=30,
+        )
+        data = response.json()
+        return data["result"]
+    except Exception:
+        return "FAILED"
 
 
 def process_post(post, index):
     result = send_to_pipeline(post["text"])
-    print(f"Post {index}:")
+    print(f"Post {index}:", flush=True)
     if result == "FAILED":
-        print("[DELETED]")
+        print("[DELETED]", flush=True)
     else:
-        print(f"{post['text']} {result}")
-    print()
+        print(f"{post['text']} {result}", flush=True)
+    print(flush=True)
 
 
 def main():
