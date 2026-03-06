@@ -5,3 +5,4 @@ grpcio-tools
 google-genai
 requests
 pytest
+httpx
