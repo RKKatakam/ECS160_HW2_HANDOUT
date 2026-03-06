@@ -11,22 +11,12 @@ import hashtagging_pb2_grpc
 
 # Configure Gemini
 client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY", ""))
-MODEL = "gemini-2.0-flash"
+MODEL = "gemini-2.5-flash"
 
 
 def _fallback_hashtag(post_content):
-    """Generate a simple hashtag from post content when the API fails."""
-    stop_words = {
-        "i", "me", "my", "the", "a", "an", "is", "was", "are", "be", "been",
-        "to", "of", "in", "for", "on", "with", "at", "by", "from", "it",
-        "this", "that", "so", "and", "or", "but", "not", "just", "out",
-        "up", "has", "had", "have", "do", "did", "all", "its", "our",
-    }
-    words = re.findall(r"[a-zA-Z]+", post_content)
-    for word in words:
-        if len(word) > 3 and word.lower() not in stop_words:
-            return "#" + word.capitalize()
-    return "#Post"
+    return "#bluesky"
+
 
 
 def generate_hashtag(post_content):
@@ -49,7 +39,8 @@ def generate_hashtag(post_content):
             # Take only the first hashtag if multiple were returned
             hashtag = hashtag.split()[0]
             return hashtag
-        except Exception:
+        except Exception as e:
+            print(f"[Gemini ERROR] Attempt {attempt+1}/{max_retries}: {type(e).__name__}: {e}")
             if attempt < max_retries - 1:
                 time.sleep(1)
                 continue
