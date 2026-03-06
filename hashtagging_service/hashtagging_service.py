@@ -15,7 +15,20 @@ MODEL = "gemini-2.5-flash"
 
 
 def _fallback_hashtag(post_content):
-    return "#bluesky"
+    """
+    ensures the returned tag looks like a single hashtag
+    """
+    default_tag = "#bskypost"
+    
+    if not post_content or not post_content.strip():
+        return default_tag
+
+    first_word = post_content.strip().split()[0]
+    sanitized = "".join(ch for ch in first_word if ch.isalnum() or ch in "#_")
+    
+    tag = sanitized if sanitized.startswith("#") else "#" + sanitized
+    
+    return tag if len(tag) >= 2 and tag != "#" else default_tag
 
 
 
